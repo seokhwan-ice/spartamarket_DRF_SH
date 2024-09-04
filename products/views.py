@@ -3,7 +3,6 @@ from django.http import JsonResponse
 from rest_framework.decorators import api_view
 from .models import Product
 from django.core import serializers
-from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializers import ProductSerializer 
 from rest_framework import status
@@ -24,3 +23,10 @@ def product_list(request):
             return Response(serializer.data, status=201)
         print(serializer.errors)
         return Response(serializer.errors, status=400)
+    
+@api_view(["GET"])
+def product_detail(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if request.method == "GET":
+        serializer=ProductSerializer(product)
+        return Response(serializer.data)
