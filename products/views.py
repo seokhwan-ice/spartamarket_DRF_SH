@@ -24,9 +24,20 @@ def product_list(request):
         print(serializer.errors)
         return Response(serializer.errors, status=400)
     
-@api_view(["GET"])
+@api_view(["GET","PUT","DELETE"])
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "GET":
         serializer=ProductSerializer(product)
         return Response(serializer.data)
+    
+    elif request.method == "PUT":
+        serializer= ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        
+    elif request.method == "DELETE":
+        product.delete()
+        data={"delete":f"Product({pk}) is deleted."}
+        return Response(data, status=status.HTTP_200_ok)
