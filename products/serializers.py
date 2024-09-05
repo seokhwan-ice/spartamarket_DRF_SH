@@ -7,13 +7,19 @@ class CommentSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("product",)
 
+    def to_representation(self, instance):
+            ret = super().to_representation(instance)
+            ret.pop("article")
+            return ret
+
 class ProductSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    comments_count = serializers.IntegerField(source="comments.count", read_only=True)
+    # comments_count = serializers.IntegerField(source="comments.count", read_only=True)
 
-    
     class Meta:
         model = Product
         fields = "__all__"
 
-
+# class ProductDetailSerializer(ProductSerializer):
+#     comments = CommentSerializer(many=True, read_only=True)
+#     comments_count = serializers.IntegerField(source="comments.count", read_only=True)

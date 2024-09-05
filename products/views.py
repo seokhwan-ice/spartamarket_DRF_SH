@@ -1,15 +1,16 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes #해당 뷰에 대한 권한 검사를 수행. 인증된 사용자만 접근.
 from .models import Product, Comment
 from django.core import serializers
 from rest_framework.response import Response
 from .serializers import ProductSerializer, CommentSerializer 
 from rest_framework import status
-
+from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 @api_view(["GET","POST"])
+@permission_classes([IsAuthenticated])
 def product_list(request):
     if request.method == "GET":
         products = Product.objects.all()
