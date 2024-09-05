@@ -47,7 +47,7 @@ def product_detail(request, pk):
 def comment_list(request, pk):
     if request.method == "GET":
         product = get_object_or_404(Product, pk=pk)
-        comments = product.comment_set.all()
+        comments = product.comments.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     
