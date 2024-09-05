@@ -41,3 +41,4 @@ def product_detail(request, pk):
         product.delete()
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_ok)
+    
