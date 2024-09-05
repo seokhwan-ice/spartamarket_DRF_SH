@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view
 from .models import Product
 from django.core import serializers
 from rest_framework.response import Response
-from .serializers import ProductSerializer 
+from .serializers import ProductSerializer, CommentSerializer 
 from rest_framework import status
 
 
@@ -42,3 +42,21 @@ def product_detail(request, pk):
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_ok)
     
+
+@api_view(["GET","POST"])
+def comment_list(request, pk):
+    if request.method == "GET":
+        product = get_object_or_404(Product, pk=pk)
+        comments = product.comment_set.all()
+        serializer = CommentSerializer(comments, many=True)
+        return Response(serializer.data)
+    
+    elif request.method =="POST":
+        serializer = CommentSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+        print(serializer.errors)
+        return Response(serializer.errors)
+        
+
