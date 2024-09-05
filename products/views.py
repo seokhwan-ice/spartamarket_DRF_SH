@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
-from .models import Product
+from .models import Product, Comment
 from django.core import serializers
 from rest_framework.response import Response
 from .serializers import ProductSerializer, CommentSerializer 
@@ -40,7 +40,7 @@ def product_detail(request, pk):
     elif request.method == "DELETE":
         product.delete()
         data={"delete":f"Product({pk}) is deleted."}
-        return Response(data, status=status.HTTP_200_ok)
+        return Response(data, status=status.HTTP_200_OK)
     
 
 @api_view(["GET","POST"])
@@ -58,5 +58,18 @@ def comment_list(request, pk):
             return Response(serializer.data)
         print(serializer.errors)
         return Response(serializer.errors)
-        
+    
+@api_view(["DELETE","PUT"])
+def comment_detail(request, pk):
+    comment = get_object_or_404(Comment, pk=pk)
+    
+    if request.method=="DELETE":
+        comment.delete()
+        data={"delete":f"Comment({pk}) is deleted."}
+        return Response(data, status=status.HTTP_200_OK)   
 
+    elif request.method=="PUT":
+        serializer=CommentSerializer(comment, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
