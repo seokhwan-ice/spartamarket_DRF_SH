@@ -9,15 +9,17 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
-@api_view(["GET","POST"])
-@permission_classes([IsAuthenticated])# 권한
+@api_view(["GET"])
 def product_list(request):
     if request.method == "GET":
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-    elif request.method == "POST":
+@api_view(["POST"])
+@permission_classes([IsAuthenticated]) #권한 데코레이터
+def product_create(request):
+    if request.method == "POST":
         serializer= ProductSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -26,6 +28,7 @@ def product_list(request):
         return Response(serializer.errors, status=400)
     
 @api_view(["GET","PUT","DELETE"])
+@permission_classes([IsAuthenticated]) #권한 데코레이터
 def product_detail(request, pk):
     product = get_object_or_404(Product, pk=pk)
     if request.method == "GET":
