@@ -13,7 +13,3 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'nickname': {'required': True}, 
             'birthday': {'required': True}  
         }
-
-class LoginSerializer(serializers.Serializer): #ModelSerializer(데이터베이스연동하여 인스턴스생성,업데이트에 사용)
-    username=serializers.CharField()            #Serializer > 단순히 클라이언트가 제공한 데이터를 검증,인증에 사용
-    password=serializers.CharField()    
