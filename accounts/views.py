@@ -21,3 +21,9 @@ def account_signup(request):
         # 유효성 검사 실패 시 오류 메시지를 반환
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+@api_view(["GET"])
+def account_profile(request, username):
+    user = get_object_or_404(User, username=username)
+    if request.method == "GET":
+        serializer=UserSignupSerializer(user)
+        return Response (serializer.data)
