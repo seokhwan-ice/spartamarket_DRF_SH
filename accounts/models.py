@@ -7,4 +7,4 @@ from django.contrib.auth.models import AbstractUser
 class User(AbstractUser):
     nickname = models.CharField(max_length=10, unique=True)# unique=True 닉네임 중복불가
     birthday = models.DateField()
-    emial = models.EmailField(unique=True) 
+    email = models.EmailField(unique=True) 
