@@ -4,7 +4,7 @@ from rest_framework.decorators import api_view, permission_classes #해당 뷰�
 from .models import User
 from django.core import serializers
 from rest_framework.response import Response
-from .serializers import UserSignupSerializer
+from .serializers import UserSignupSerializer, LoginSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
@@ -20,3 +20,9 @@ def account_signup(request):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
         # 유효성 검사 실패 시 오류 메시지를 반환
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(["POST"])
+def login(request, pk):
+    serializer = LoginSerializer(data=request.data)
+    if serializer.is_valid(raise_exception=True):
+        pass
