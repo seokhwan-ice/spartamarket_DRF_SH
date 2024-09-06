@@ -9,7 +9,7 @@ class CommentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
             ret = super().to_representation(instance)
-            ret.pop("article")
+            ret.pop("product")
             return ret
 
 class ProductSerializer(serializers.ModelSerializer):
