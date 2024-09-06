@@ -22,8 +22,9 @@ def account_signup(request):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def account_profile(request, username):
     user = get_object_or_404(User, username=username)
-    if request.method == "GET":
-        serializer=UserSignupSerializer(user)
-        return Response (serializer.data)
+#    if request.method == "GET":
+    serializer=UserSignupSerializer(user)
+    return Response (serializer.data)

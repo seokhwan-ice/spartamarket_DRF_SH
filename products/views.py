@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 
 # Create your views here.
 @api_view(["GET","POST"])
-#@permission_classes([IsAuthenticated])# 권한
+@permission_classes([IsAuthenticated])# 권한
 def product_list(request):
     if request.method == "GET":
         products = Product.objects.all()
