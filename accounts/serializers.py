@@ -16,9 +16,10 @@ class UserSignupSerializer(serializers.ModelSerializer):
             'birthday': {'required': True}  
         }
     
-    def create(self, validated_data):
-        user=super().create(validated_data)
-        user.set_password(validated_data['password'])
+    #패스워드 저장시 암호화
+    def create(self, validated_data): 
+        user=super().create(validated_data)         # super()로 부모 클래스의 create() 메서드를 호출하여 validated_data를 사용해 User 객체 생성
+        user.set_password(validated_data['password'])#방금생성된user. 사용자비번을 안전하게 해싱.set_password 유효성검증데이터(password)사용자가 입력한
         user.save()
         return user
         
