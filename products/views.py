@@ -7,26 +7,43 @@ from rest_framework.response import Response
 from .serializers import ProductSerializer, CommentSerializer 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 
 # Create your views here.
-@api_view(["GET"])
-def product_list(request):
-    if request.method == "GET":
+# @api_view(["GET"])
+# def product_list(request):
+#     if request.method == "GET":
+#         products = Product.objects.all()
+#         serializer = ProductSerializer(products, many=True)
+#         return Response(serializer.data)
+
+# @api_view(["POST"])
+# @permission_classes([IsAuthenticated]) #권한 데코레이터
+# def product_create(request):
+#     if request.method == "POST":
+#         serializer= ProductSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status=201)
+#         print(serializer.errors)
+#         return Response(serializer.errors, status=400)
+
+class ProductListAPIView(APIView):
+    def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated]) #권한 데코레이터
-def product_create(request):
-    if request.method == "POST":
+    permission_classes([IsAuthenticated])
+    def post(self, request):
         serializer= ProductSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=201)
-        print(serializer.errors)
-        return Response(serializer.errors, status=400)
-    
+            return Response(serializer.data, status=201)    
+
+
+
 @api_view(["GET","PUT","DELETE"])
 @permission_classes([IsAuthenticated]) #권한 데코레이터
 def product_detail(request, pk):
