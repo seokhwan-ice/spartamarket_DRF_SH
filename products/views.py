@@ -9,6 +9,10 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
+from rest_framework import mixins
+from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+
+
 
 # 함수형
 # @api_view(["GET"])
@@ -43,6 +47,12 @@ class ProductListAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)    
 
+##믹스인
+#class ProductCUAPIView(ListCreateAPIView):
+#    queryset =Product.objects.all()
+#    serializer_class=ProductSerializer 
+#    permission_classes=[IsAuthenticated]
+
 
 #함수형 상세조회, 수정, 삭제
 # @api_view(["GET","PUT","DELETE"])
@@ -64,30 +74,37 @@ class ProductListAPIView(APIView):
 #         data={"delete":f"Product({pk}) is deleted."}
 #         return Response(data, status=status.HTTP_200_OK)
 
-#클래스형 상세조회, 수정, 삭제
-class ProductDetailAPIView(APIView):
-    permission_classes([IsAuthenticated])
+# #클래스형 상세조회, 수정, 삭제
+# class ProductDetailAPIView(APIView):
+#     permission_classes([IsAuthenticated])
     
-    def get_object(self, pk):
-        return get_object_or_404(Product, pk=pk)
+#     def get_object(self, pk):
+#         return get_object_or_404(Product, pk=pk)
 
-    def get(self, request, pk):
-        product = self.get_object(pk)
-        serializer=ProductSerializer(product)
-        return Response(serializer.data)
+#     def get(self, request, pk):
+#         product = self.get_object(pk)
+#         serializer=ProductSerializer(product)
+#         return Response(serializer.data)
 
-    def put(self, request, pk):
-        product = self.get_object(pk)
-        serializer=ProductSerializer(product, data=request.data, partial=True)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data)
+#     def put(self, request, pk):
+#         product = self.get_object(pk)
+#         serializer=ProductSerializer(product, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data)
         
-    def delete(self, request, pk):
-        product = self.get_object(pk)
-        product.delete()
-        data={"delete":f"Product({pk}) is deleted."}
-        return Response(data, status=status.HTTP_200_OK)
+#     def delete(self, request, pk):
+#         product = self.get_object(pk)
+#         product.delete()
+#         data={"delete":f"Product({pk}) is deleted."}
+#         return Response(data, status=status.HTTP_200_OK)
+
+
+#믹스인
+class ProductRUDAPIView(RetrieveUpdateDestroyAPIView):
+    queryset =Product.objects.all()
+    serializer_class=ProductSerializer 
+    permission_classes=[IsAuthenticated]
 
 #함수형 댓글 조회 생성
 #@api_view(["GET","POST"])
