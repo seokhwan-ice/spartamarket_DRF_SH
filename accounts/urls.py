@@ -11,6 +11,6 @@ app_name="accounts"
 urlpatterns = [
     path("signin/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    path("signup/", views.account_signup, name="account_signup"),
+    path("", views.account_signup, name="account_signup"),
     path("<str:username>/", views.account_profile, name="account_frofile"),
 ]
