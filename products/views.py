@@ -44,25 +44,45 @@ class ProductListAPIView(APIView):
 
 
 
-@api_view(["GET","PUT","DELETE"])
-@permission_classes([IsAuthenticated]) #권한 데코레이터
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == "GET":
+# @api_view(["GET","PUT","DELETE"])
+# @permission_classes([IsAuthenticated]) #권한 데코레이터
+# def product_detail(request, pk):
+#     product = get_object_or_404(Product, pk=pk)
+#     if request.method == "GET":
+#         serializer=ProductSerializer(product)
+#         return Response(serializer.data)
+    
+#     elif request.method == "PUT":
+#         serializer= ProductSerializer(product, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data)
+        
+#     elif request.method == "DELETE":
+#         product.delete()
+#         data={"delete":f"Product({pk}) is deleted."}
+#         return Response(data, status=status.HTTP_200_OK)
+
+class ProductDetailAPIView(APIView):
+    @permission_classes([IsAuthenticated])
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
         serializer=ProductSerializer(product)
         return Response(serializer.data)
-    
-    elif request.method == "PUT":
-        serializer= ProductSerializer(product, data=request.data, partial=True)
+
+    def put(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        serializer=ProductSerializer(product, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         
-    elif request.method == "DELETE":
+    def delete(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
         product.delete()
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
-    
 
 @api_view(["GET","POST"])
 def comment_list(request, pk):
