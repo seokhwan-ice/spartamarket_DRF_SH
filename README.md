@@ -83,6 +83,6 @@
 
 ---
 
-## RDA
+## ERD
 
 ![ERD개인과제](https://github.com/user-attachments/assets/ff6bfbf1-daa8-42fa-8256-ef8b13d349ac)
