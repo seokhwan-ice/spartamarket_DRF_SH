@@ -64,7 +64,7 @@ class ProductListAPIView(APIView):
 #         return Response(data, status=status.HTTP_200_OK)
 
 class ProductDetailAPIView(APIView):
-    @permission_classes([IsAuthenticated])
+    permission_classes([IsAuthenticated])
 
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
@@ -84,32 +84,65 @@ class ProductDetailAPIView(APIView):
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
 
-@api_view(["GET","POST"])
-def comment_list(request, pk):
-    if request.method == "GET":
+#@api_view(["GET","POST"])
+#def comment_list(request, pk):
+#    if request.method == "GET":
+#        product = get_object_or_404(Product, pk=pk)
+#        comments = product.comments.all()
+#        serializer = CommentSerializer(comments, many=True)
+#        return Response(serializer.data)
+#    
+#    elif request.method =="POST":
+#        serializer = CommentSerializer(data=request.data)
+#        if serializer.is_valid(raise_exception=True):
+#            serializer.save()
+#            return Response(serializer.data)
+#        print(serializer.errors)
+#        return Response(serializer.errors)
+    
+class CommentListAPIView(APIView):
+    def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         comments = product.comments.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     
-    elif request.method =="POST":
+    permission_classes([IsAuthenticated])
+    def post(self, request, pk):
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-        print(serializer.errors)
         return Response(serializer.errors)
     
-@api_view(["DELETE","PUT"])
-def comment_detail(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    
-    if request.method=="DELETE":
+#@api_view(["DELETE","PUT"])
+#@permission_classes([IsAuthenticated])
+#def comment_detail(request, pk):
+#    
+#    comment = get_object_or_404(Comment, pk=pk)
+#    
+#    if request.method=="DELETE":
+#        comment.delete()
+#        data={"delete":f"Comment({pk}) is deleted."}
+#        return Response(data, status=status.HTTP_200_OK)   
+#
+#    elif request.method=="PUT":
+#        serializer=CommentSerializer(comment, data=request.data, partial=True)
+#        if serializer.is_valid(raise_exception=True):
+#            serializer.save()
+#            return Response(serializer.data)
+        
+class CommentDetailAPIView(APIView):
+    permission_classes([IsAuthenticated])
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
         comment.delete()
         data={"delete":f"Comment({pk}) is deleted."}
-        return Response(data, status=status.HTTP_200_OK)   
-
-    elif request.method=="PUT":
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
         serializer=CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
