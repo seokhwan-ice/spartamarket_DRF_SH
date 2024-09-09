@@ -10,7 +10,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.views import APIView
 
 
-# Create your views here.
+# 함수형
 # @api_view(["GET"])
 # def product_list(request):
 #     if request.method == "GET":
@@ -29,6 +29,7 @@ from rest_framework.views import APIView
 #         print(serializer.errors)
 #         return Response(serializer.errors, status=400)
 
+#클래스형 조회화 생성
 class ProductListAPIView(APIView):
     def get(self, request):
         products = Product.objects.all()
@@ -43,7 +44,7 @@ class ProductListAPIView(APIView):
             return Response(serializer.data, status=201)    
 
 
-
+#함수형 상세조회, 수정, 삭제
 # @api_view(["GET","PUT","DELETE"])
 # @permission_classes([IsAuthenticated]) #권한 데코레이터
 # def product_detail(request, pk):
@@ -63,6 +64,7 @@ class ProductListAPIView(APIView):
 #         data={"delete":f"Product({pk}) is deleted."}
 #         return Response(data, status=status.HTTP_200_OK)
 
+#클래스형 상세조회, 수정, 삭제
 class ProductDetailAPIView(APIView):
     permission_classes([IsAuthenticated])
 
@@ -84,6 +86,7 @@ class ProductDetailAPIView(APIView):
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
 
+#함수형 댓글 조회 생성
 #@api_view(["GET","POST"])
 #def comment_list(request, pk):
 #    if request.method == "GET":
@@ -99,7 +102,9 @@ class ProductDetailAPIView(APIView):
 #            return Response(serializer.data)
 #        print(serializer.errors)
 #        return Response(serializer.errors)
-    
+
+
+#클래스형  코멘트 조회, 생성  
 class CommentListAPIView(APIView):
     def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
@@ -114,7 +119,9 @@ class CommentListAPIView(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-    
+
+
+#함수형 코멘트 삭제, 수정
 #@api_view(["DELETE","PUT"])
 #@permission_classes([IsAuthenticated])
 #def comment_detail(request, pk):
@@ -131,7 +138,9 @@ class CommentListAPIView(APIView):
 #        if serializer.is_valid(raise_exception=True):
 #            serializer.save()
 #            return Response(serializer.data)
-        
+
+
+#클래스형 삭제 수정
 class CommentDetailAPIView(APIView):
     permission_classes([IsAuthenticated])
 
