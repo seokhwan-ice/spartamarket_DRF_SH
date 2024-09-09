@@ -52,13 +52,11 @@ class ProductListAPIView(APIView):
         serializer = ProductSerializer(page, many=True)
         return paginator.get_paginated_response(serializer.data)
         
-
-    permission_classes=[IsAuthenticated]
     def post(self, request):
-        serializer= ProductSerializer(data=request.data)
+        serializer = ProductSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
-            serializer.save()
-            return Response(serializer.data, status=201)    
+            serializer.save(author=request.user)  # 작성자 필드에 로그인된 사용자 할당
+            return Response(serializer.data, status=201) 
 
 
 
@@ -115,7 +113,7 @@ class ProductDetailAPIView(APIView):
     def delete(self, request, pk):
         product = self.get_object(pk)
         if request.user != product.author:
-            raise PermissionDenied("You do not have permission to edit this product.")
+            raise PermissionDenied("삭제못한다")
         product.delete()
         data = {"delete": f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
@@ -183,7 +181,7 @@ class CommentListAPIView(APIView):
 
 #클래스형 삭제 수정
 class CommentDetailAPIView(APIView):
-    permission_classes([IsAuthenticated])
+    permission_classes=[IsAuthenticated]
     
     def get_object(self, pk):
         return get_object_or_404(Comment, pk=pk)
