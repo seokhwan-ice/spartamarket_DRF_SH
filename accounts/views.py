@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from .serializers import UserSignupSerializer
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
 
 
 # Create your views here.
@@ -28,3 +29,5 @@ def account_profile(request, username):
 #    if request.method == "GET":
     serializer=UserSignupSerializer(user)
     return Response (serializer.data)
+
+

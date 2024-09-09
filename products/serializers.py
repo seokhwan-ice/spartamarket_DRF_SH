@@ -14,12 +14,12 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class ProductSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
-    # comments_count = serializers.IntegerField(source="comments.count", read_only=True)
+    comments_count = serializers.IntegerField(source="comments.count", read_only=True)
 
     class Meta:
         model = Product
         fields = "__all__"
 
-# class ProductDetailSerializer(ProductSerializer):
-#     comments = CommentSerializer(many=True, read_only=True)
-#     comments_count = serializers.IntegerField(source="comments.count", read_only=True)
+#class ProductDetailSerializer(ProductSerializer):
+#    comments = CommentSerializer(many=True, read_only=True)
+#    comments_count = serializers.IntegerField(source="comments.count", read_only=True)

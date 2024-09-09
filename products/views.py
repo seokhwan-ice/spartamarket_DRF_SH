@@ -7,72 +7,142 @@ from rest_framework.response import Response
 from .serializers import ProductSerializer, CommentSerializer 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.views import APIView
+
 
 # Create your views here.
-@api_view(["GET"])
-def product_list(request):
-    if request.method == "GET":
+# @api_view(["GET"])
+# def product_list(request):
+#     if request.method == "GET":
+#         products = Product.objects.all()
+#         serializer = ProductSerializer(products, many=True)
+#         return Response(serializer.data)
+
+# @api_view(["POST"])
+# @permission_classes([IsAuthenticated]) #권한 데코레이터
+# def product_create(request):
+#     if request.method == "POST":
+#         serializer= ProductSerializer(data=request.data)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data, status=201)
+#         print(serializer.errors)
+#         return Response(serializer.errors, status=400)
+
+class ProductListAPIView(APIView):
+    def get(self, request):
         products = Product.objects.all()
         serializer = ProductSerializer(products, many=True)
         return Response(serializer.data)
 
-@api_view(["POST"])
-@permission_classes([IsAuthenticated]) #권한 데코레이터
-def product_create(request):
-    if request.method == "POST":
+    permission_classes([IsAuthenticated])
+    def post(self, request):
         serializer= ProductSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
-            return Response(serializer.data, status=201)
-        print(serializer.errors)
-        return Response(serializer.errors, status=400)
+            return Response(serializer.data, status=201)    
+
+
+
+# @api_view(["GET","PUT","DELETE"])
+# @permission_classes([IsAuthenticated]) #권한 데코레이터
+# def product_detail(request, pk):
+#     product = get_object_or_404(Product, pk=pk)
+#     if request.method == "GET":
+#         serializer=ProductSerializer(product)
+#         return Response(serializer.data)
     
-@api_view(["GET","PUT","DELETE"])
-@permission_classes([IsAuthenticated]) #권한 데코레이터
-def product_detail(request, pk):
-    product = get_object_or_404(Product, pk=pk)
-    if request.method == "GET":
+#     elif request.method == "PUT":
+#         serializer= ProductSerializer(product, data=request.data, partial=True)
+#         if serializer.is_valid(raise_exception=True):
+#             serializer.save()
+#             return Response(serializer.data)
+        
+#     elif request.method == "DELETE":
+#         product.delete()
+#         data={"delete":f"Product({pk}) is deleted."}
+#         return Response(data, status=status.HTTP_200_OK)
+
+class ProductDetailAPIView(APIView):
+    permission_classes([IsAuthenticated])
+
+    def get(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
         serializer=ProductSerializer(product)
         return Response(serializer.data)
-    
-    elif request.method == "PUT":
-        serializer= ProductSerializer(product, data=request.data, partial=True)
+
+    def put(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
+        serializer=ProductSerializer(product, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         
-    elif request.method == "DELETE":
+    def delete(self, request, pk):
+        product = get_object_or_404(Product, pk=pk)
         product.delete()
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
-    
 
-@api_view(["GET","POST"])
-def comment_list(request, pk):
-    if request.method == "GET":
+#@api_view(["GET","POST"])
+#def comment_list(request, pk):
+#    if request.method == "GET":
+#        product = get_object_or_404(Product, pk=pk)
+#        comments = product.comments.all()
+#        serializer = CommentSerializer(comments, many=True)
+#        return Response(serializer.data)
+#    
+#    elif request.method =="POST":
+#        serializer = CommentSerializer(data=request.data)
+#        if serializer.is_valid(raise_exception=True):
+#            serializer.save()
+#            return Response(serializer.data)
+#        print(serializer.errors)
+#        return Response(serializer.errors)
+    
+class CommentListAPIView(APIView):
+    def get(self, request, pk):
         product = get_object_or_404(Product, pk=pk)
         comments = product.comments.all()
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     
-    elif request.method =="POST":
+    permission_classes([IsAuthenticated])
+    def post(self, request, pk):
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
-        print(serializer.errors)
         return Response(serializer.errors)
     
-@api_view(["DELETE","PUT"])
-def comment_detail(request, pk):
-    comment = get_object_or_404(Comment, pk=pk)
-    
-    if request.method=="DELETE":
+#@api_view(["DELETE","PUT"])
+#@permission_classes([IsAuthenticated])
+#def comment_detail(request, pk):
+#    
+#    comment = get_object_or_404(Comment, pk=pk)
+#    
+#    if request.method=="DELETE":
+#        comment.delete()
+#        data={"delete":f"Comment({pk}) is deleted."}
+#        return Response(data, status=status.HTTP_200_OK)   
+#
+#    elif request.method=="PUT":
+#        serializer=CommentSerializer(comment, data=request.data, partial=True)
+#        if serializer.is_valid(raise_exception=True):
+#            serializer.save()
+#            return Response(serializer.data)
+        
+class CommentDetailAPIView(APIView):
+    permission_classes([IsAuthenticated])
+
+    def delete(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
         comment.delete()
         data={"delete":f"Comment({pk}) is deleted."}
-        return Response(data, status=status.HTTP_200_OK)   
-
-    elif request.method=="PUT":
+        return Response(data, status=status.HTTP_200_OK)
+    
+    def put(self, request, pk):
+        comment = get_object_or_404(Comment, pk=pk)
         serializer=CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
