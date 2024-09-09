@@ -67,21 +67,24 @@ class ProductListAPIView(APIView):
 #클래스형 상세조회, 수정, 삭제
 class ProductDetailAPIView(APIView):
     permission_classes([IsAuthenticated])
+    
+    def get_object(self, pk):
+        return get_object_or_404(Product, pk=pk)
 
     def get(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         serializer=ProductSerializer(product)
         return Response(serializer.data)
 
     def put(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         serializer=ProductSerializer(product, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data)
         
     def delete(self, request, pk):
-        product = get_object_or_404(Product, pk=pk)
+        product = self.get_object(pk)
         product.delete()
         data={"delete":f"Product({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
@@ -143,15 +146,18 @@ class CommentListAPIView(APIView):
 #클래스형 삭제 수정
 class CommentDetailAPIView(APIView):
     permission_classes([IsAuthenticated])
+    
+    def get_object(self, pk):
+        return get_object_or_404(Comment, pk=pk)
 
     def delete(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
+        comment = self.get_object(pk)
         comment.delete()
         data={"delete":f"Comment({pk}) is deleted."}
         return Response(data, status=status.HTTP_200_OK)
     
     def put(self, request, pk):
-        comment = get_object_or_404(Comment, pk=pk)
+        comment = self.get_object(pk)
         serializer=CommentSerializer(comment, data=request.data, partial=True)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
