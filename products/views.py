@@ -11,6 +11,8 @@ from rest_framework.views import APIView
 
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
+from rest_framework.pagination import PageNumberPagination
+
 
 
 
@@ -33,12 +35,23 @@ from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView
 #         print(serializer.errors)
 #         return Response(serializer.errors, status=400)
 
+
+# 한 페이지션 설정
+class ProductPagination(PageNumberPagination):
+    page_size = 10  
+    page_size_query_param = 'page_size'
+    max_page_size = 30
+
+
 #클래스형 조회화 생성
 class ProductListAPIView(APIView):
     def get(self, request):
-        products = Product.objects.all()
-        serializer = ProductSerializer(products, many=True)
-        return Response(serializer.data)
+        products = Product.objects.all().order_by('id')
+        paginator = ProductPagination()
+        page = paginator.paginate_queryset(products, request)
+        serializer = ProductSerializer(page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+        
 
     permission_classes([IsAuthenticated])
     def post(self, request):
@@ -47,11 +60,15 @@ class ProductListAPIView(APIView):
             serializer.save()
             return Response(serializer.data, status=201)    
 
+
+
 ##믹스인
 #class ProductCUAPIView(ListCreateAPIView):
 #    queryset =Product.objects.all()
 #    serializer_class=ProductSerializer 
 #    permission_classes=[IsAuthenticated]
+# 
+#수정만 권한주기 >> 오버라이딩 >> ing
 
 
 #함수형 상세조회, 수정, 삭제
@@ -100,7 +117,7 @@ class ProductListAPIView(APIView):
 #         return Response(data, status=status.HTTP_200_OK)
 
 
-#믹스인
+#믹스인 상품 상세조회 수정 삭제
 class ProductRUDAPIView(RetrieveUpdateDestroyAPIView):
     queryset =Product.objects.all()
     serializer_class=ProductSerializer 
