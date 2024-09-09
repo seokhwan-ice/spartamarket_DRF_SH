@@ -12,8 +12,8 @@ from rest_framework.views import APIView
 from rest_framework import mixins
 from rest_framework.generics import GenericAPIView, RetrieveUpdateDestroyAPIView, ListCreateAPIView
 from rest_framework.pagination import PageNumberPagination
-
-
+from rest_framework import permissions
+from rest_framework.exceptions import PermissionDenied
 
 
 # 함수형
@@ -53,7 +53,7 @@ class ProductListAPIView(APIView):
         return paginator.get_paginated_response(serializer.data)
         
 
-    permission_classes([IsAuthenticated])
+    permission_classes=[IsAuthenticated]
     def post(self, request):
         serializer= ProductSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
@@ -91,37 +91,41 @@ class ProductListAPIView(APIView):
 #         data={"delete":f"Product({pk}) is deleted."}
 #         return Response(data, status=status.HTTP_200_OK)
 
-# #클래스형 상세조회, 수정, 삭제
-# class ProductDetailAPIView(APIView):
-#     permission_classes([IsAuthenticated])
-    
-#     def get_object(self, pk):
-#         return get_object_or_404(Product, pk=pk)
+#클래스형 상세조회, 수정, 삭제
+class ProductDetailAPIView(APIView):
+    permission_classes = [IsAuthenticated]  # 클래스 속성으로 이동
 
-#     def get(self, request, pk):
-#         product = self.get_object(pk)
-#         serializer=ProductSerializer(product)
-#         return Response(serializer.data)
+    def get_object(self, pk):
+        return get_object_or_404(Product, pk=pk)
 
-#     def put(self, request, pk):
-#         product = self.get_object(pk)
-#         serializer=ProductSerializer(product, data=request.data, partial=True)
-#         if serializer.is_valid(raise_exception=True):
-#             serializer.save()
-#             return Response(serializer.data)
-        
-#     def delete(self, request, pk):
-#         product = self.get_object(pk)
-#         product.delete()
-#         data={"delete":f"Product({pk}) is deleted."}
-#         return Response(data, status=status.HTTP_200_OK)
+    def get(self, request, pk):
+        product = self.get_object(pk)
+        serializer = ProductSerializer(product)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        product = self.get_object(pk)
+        if request.user != product.author:
+            raise PermissionDenied("You do not have permission to edit this product.")
+        serializer = ProductSerializer(product, data=request.data, partial=True)
+        if serializer.is_valid(raise_exception=True):
+            serializer.save()
+            return Response(serializer.data)
+
+    def delete(self, request, pk):
+        product = self.get_object(pk)
+        if request.user != product.author:
+            raise PermissionDenied("You do not have permission to edit this product.")
+        product.delete()
+        data = {"delete": f"Product({pk}) is deleted."}
+        return Response(data, status=status.HTTP_200_OK)
 
 
-#믹스인 상품 상세조회 수정 삭제
-class ProductRUDAPIView(RetrieveUpdateDestroyAPIView):
-    queryset =Product.objects.all()
-    serializer_class=ProductSerializer 
-    permission_classes=[IsAuthenticated]
+# #믹스인 상품 상세조회 수정 삭제
+# class ProductRUDAPIView(RetrieveUpdateDestroyAPIView):
+#     queryset =Product.objects.all()
+#     serializer_class=ProductSerializer 
+#     permission_classes=[IsAuthenticated]
 
 #함수형 댓글 조회 생성
 #@api_view(["GET","POST"])
@@ -149,7 +153,7 @@ class CommentListAPIView(APIView):
         serializer = CommentSerializer(comments, many=True)
         return Response(serializer.data)
     
-    permission_classes([IsAuthenticated])
+    permission_classes=[IsAuthenticated]
     def post(self, request, pk):
         serializer = CommentSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
